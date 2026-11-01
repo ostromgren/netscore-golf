@@ -1,0 +1,19 @@
+# Connect IQ compiler and simulator outputs
+/bin/
+/gen/
+/mir/
+*.mir
+*.prg
+*.prg.debug.xml
+*.iq
+
+# Local configuration and signing keys
+*-settings.json
+developer_key
+developer_key.*
+*.pem
+*.der
+
+# Operating system and editor files
+.DS_Store
+.idea/

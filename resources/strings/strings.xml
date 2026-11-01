@@ -1,0 +1,17 @@
+<strings>
+    <string id="AppName">Golf Scorecard</string>
+    <string id="Course1NameTitle">Course 1 name</string>
+    <string id="Course2NameTitle">Course 2 name</string>
+    <string id="Course3NameTitle">Course 3 name</string>
+    <string id="Course4NameTitle">Course 4 name</string>
+    <string id="Course5NameTitle">Course 5 name</string>
+    <string id="Course6NameTitle">Course 6 name</string>
+    <string id="Course7NameTitle">Course 7 name</string>
+    <string id="Course8NameTitle">Course 8 name</string>
+    <string id="Course9NameTitle">Course 9 name</string>
+    <string id="Course10NameTitle">Course 10 name</string>
+    <string id="LoopATitle">Loop A (name|par-index list)</string>
+    <string id="LoopBTitle">Loop B (name|par-index list)</string>
+    <string id="LoopCTitle">Loop C (name|par-index list)</string>
+    <string id="LoopDTitle">Loop D (name|par-index list)</string>
+</strings>
