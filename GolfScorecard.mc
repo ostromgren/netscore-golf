@@ -333,12 +333,14 @@ class GolfScorecard {
     }
 
     public static function completeRound(round as Dictionary) as Void {
-        var totalPoints = ScoreCalculator.calculateTotalScore(
+        var totals = ScoreCalculator.calculateRoundTotals(
             round["holes"] as Array,
             round["strokes"] as Array,
             round["handicap"] as Number
         );
-        round["totalPoints"] = totalPoints;
+        round["totalGrossStrokes"] = totals["gross"] as Number;
+        round["totalNetStrokes"] = totals["net"] as Number;
+        round["totalPoints"] = totals["points"] as Number;
         round["completed"] = true;
         Storage.setValue("activeRound", round as Application.Storage.ValueType);
     }
@@ -367,6 +369,7 @@ class GolfScorecardApp extends Application.AppBase {
         var round = GolfScorecard.getActiveRound();
         if (round != null) {
             if (round["completed"] as Boolean) {
+                GolfScorecard.completeRound(round);
                 var summaryView = new SummaryView(round);
                 return [summaryView, new SummaryViewDelegate(summaryView)];
             }

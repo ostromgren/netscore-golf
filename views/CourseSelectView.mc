@@ -50,14 +50,14 @@ class CourseSelectView extends WatchUi.View {
         var centerX = dc.getWidth() / 2;
         _needsMarquee = false;
 
-        drawFittedText(dc, centerX, _screenHeight * 16 / 100, "GOLF SCORECARD",
+        drawFittedText(dc, centerX, _screenHeight * 16 / 100, "NETSCORE GOLF",
             dc.getWidth() * 72 / 100);
 
         if (_courses.size() == 0) {
             var status = (_errors.size() > 0) ?
                 "Course settings invalid" : "No courses loaded";
             var advice = (_errors.size() > 0) ?
-                "Check course name and Loop A-D" : "Save settings and reopen app";
+                "Check settings, then tap to reload" : "Save settings, then tap to reload";
             drawFittedText(dc, centerX, _screenHeight * 42 / 100, status,
                 dc.getWidth() * 82 / 100);
             drawFittedText(dc, centerX, _screenHeight * 53 / 100,
@@ -97,7 +97,8 @@ class CourseSelectView extends WatchUi.View {
         if (_courses.size() > 0) {
             drawHandicapControls(dc, centerX, _screenHeight * 78 / 100);
         }
-        dc.drawText(centerX, _screenHeight * 91 / 100, Graphics.FONT_MEDIUM, "START",
+        var actionLabel = (_courses.size() > 0) ? "START" : "RELOAD";
+        dc.drawText(centerX, _screenHeight * 91 / 100, Graphics.FONT_MEDIUM, actionLabel,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         if (_courses.size() > 0 && _errors.size() > 0 && _message.equals("")) {
@@ -300,6 +301,11 @@ class CourseSelectView extends WatchUi.View {
     }
 
     function handleTap(x as Number, y as Number) as Void {
+        if (_courses.size() == 0 || y < _screenHeight * 22 / 100) {
+            refreshConfiguration();
+            return;
+        }
+
         var relativeY = y * 100 / _screenHeight;
         if (relativeY < 35) {
             changeField(0, x < _screenWidth / 2 ? -1 : 1);
@@ -324,7 +330,7 @@ class CourseSelectView extends WatchUi.View {
 
     function startRound() as Void {
         if (_courses.size() == 0) {
-            WatchUi.requestUpdate();
+            refreshConfiguration();
             return;
         }
 

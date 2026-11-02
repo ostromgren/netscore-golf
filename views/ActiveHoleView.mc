@@ -8,6 +8,7 @@ class ActiveHoleView extends WatchUi.View {
     var _screenWidth as Number = 0;
     var _screenHeight as Number = 0;
     var _marqueeTimer as Timer.Timer;
+    var _endRoundTimer as Timer.Timer;
     var _marqueeTick as Number = 0;
     var _marqueeRunning as Boolean = false;
     var _needsMarquee as Boolean = false;
@@ -16,6 +17,7 @@ class ActiveHoleView extends WatchUi.View {
         View.initialize();
         _round = round;
         _marqueeTimer = new Timer.Timer();
+        _endRoundTimer = new Timer.Timer();
     }
 
     function onHide() as Void {
@@ -134,6 +136,29 @@ class ActiveHoleView extends WatchUi.View {
         WatchUi.requestUpdate();
     }
 
+    function showEndRoundConfirmation() as Void {
+        var confirmation = new WatchUi.Confirmation("End this round?");
+        WatchUi.pushView(
+            confirmation,
+            new EndRoundConfirmationDelegate(self),
+            WatchUi.SLIDE_IMMEDIATE
+        );
+    }
+
+    function completeRound() as Void {
+        GolfScorecard.completeRound(_round);
+        var summaryView = new SummaryView(_round);
+        WatchUi.switchToView(
+            summaryView,
+            new SummaryViewDelegate(summaryView),
+            WatchUi.SLIDE_IMMEDIATE
+        );
+    }
+
+    function scheduleRoundCompletion() as Void {
+        _endRoundTimer.start(method(:completeRound), 1, false);
+    }
+
     function previousHole() as Boolean {
         var currentHole = _round["currentHole"] as Number;
         if (currentHole > 0) {
@@ -180,10 +205,10 @@ class ActiveHoleViewDelegate extends WatchUi.InputDelegate {
             _view.adjustStrokes(-1);
             return true;
         } else if (key == WatchUi.KEY_ENTER) {
-            _view.nextHole();
+            _view.showEndRoundConfirmation();
             return true;
         } else if (key == WatchUi.KEY_ESC) {
-            return _view.previousHole();
+            return true;
         }
         return false;
     }
@@ -204,5 +229,21 @@ class ActiveHoleViewDelegate extends WatchUi.InputDelegate {
             return true;
         }
         return false;
+    }
+}
+
+class EndRoundConfirmationDelegate extends WatchUi.ConfirmationDelegate {
+    var _view as ActiveHoleView;
+
+    function initialize(view as ActiveHoleView) {
+        ConfirmationDelegate.initialize();
+        _view = view;
+    }
+
+    function onResponse(response as WatchUi.Confirm) as Boolean {
+        if (response == WatchUi.CONFIRM_YES) {
+            _view.scheduleRoundCompletion();
+        }
+        return true;
     }
 }

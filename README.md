@@ -1,4 +1,4 @@
-# Golf Scorecard
+# NetScore Golf
 
 A lightweight Garmin Connect IQ app for recording golf scores and calculating
 Stableford points on your watch. It does not use GPS or location services.
@@ -12,12 +12,17 @@ Stableford points on your watch. It does not use GPS or location services.
 - Adjust strokes with the touchscreen or watch buttons; swipe or tap to change
   holes.
 - Resume an in-progress round after leaving the app.
-- See the total Stableford points only after finishing the round.
+- See gross strokes, net strokes, and Stableford points after finishing the
+  round.
 
 ## Configure courses
 
 Open the app's settings in Garmin Connect and enter a course name and one or
 more loops. Leave unused course and loop fields blank.
+
+The course selector reloads settings when they are delivered to the app. If
+the app is already open after saving settings, tap the screen (or press
+Select on **RELOAD**) to check for updated settings without reopening it.
 
 Each loop uses this format:
 
@@ -45,9 +50,13 @@ loop is holes 1–9 and the second is holes 10–18. Clubs with a single
 Set the playing handicap (PHCP) before starting. Adjust the gross strokes for
 each hole with the on-screen controls or the watch's up/down buttons. Swipe
 left or tap **NEXT** to advance; swipe right or tap **PREV** to go back.
+Press the Action/Select button to confirm ending the round early. Press Back
+on the confirmation prompt to return to the round; Back during the round does
+not navigate to another hole or exit the round.
 
-The app saves the current hole and scores locally as you play. Stableford
-points are calculated on the watch and shown only on the final summary screen.
+The app saves the current hole and scores locally as you play. Gross strokes,
+net strokes, and Stableford points are calculated on the watch and shown on
+the final summary screen.
 
 ## Build
 
