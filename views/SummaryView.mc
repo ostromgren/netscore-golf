@@ -33,8 +33,8 @@ class SummaryView extends WatchUi.View {
     }
 
     function resetRound() as Void {
-        GolfScorecard.clearRound();
-        var configuration = GolfScorecard.loadConfiguredCourses();
+        NetScoreGolf.clearRound();
+        var configuration = NetScoreGolf.loadConfiguredCourses();
         var view = new CourseSelectView(configuration);
         WatchUi.switchToView(view, new CourseSelectViewDelegate(view), WatchUi.SLIDE_RIGHT);
     }

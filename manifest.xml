@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
-    <iq:application entry="GolfScorecardApp" id="d43edaa0-8436-4b82-9a65-c8f4918a04a2" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="3.1.0" name="@Strings.AppName" type="watch-app">
+    <iq:application entry="NetScoreGolfApp" id="226af202-6612-4428-958a-56a6e4ce4335" launcherIcon="@Drawables.LauncherIcon" minSdkVersion="3.1.0" name="@Strings.AppName" type="watch-app">
         <iq:languages>
             <iq:language>eng</iq:language>
         </iq:languages>

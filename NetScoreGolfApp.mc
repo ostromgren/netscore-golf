@@ -4,7 +4,7 @@ import Toybox.Application.Storage;
 import Toybox.Lang;
 import Toybox.WatchUi;
 
-class GolfScorecard {
+class NetScoreGolf {
 
     public static function loadConfiguredCourses() as Dictionary {
         var courses = [];
@@ -350,7 +350,7 @@ class GolfScorecard {
     }
 }
 
-class GolfScorecardApp extends Application.AppBase {
+class NetScoreGolfApp extends Application.AppBase {
     var _courseSelectView as CourseSelectView?;
 
     function initialize() {
@@ -366,10 +366,10 @@ class GolfScorecardApp extends Application.AppBase {
 
     function getInitialView() as [Views] or [Views, InputDelegates] {
         _courseSelectView = null;
-        var round = GolfScorecard.getActiveRound();
+        var round = NetScoreGolf.getActiveRound();
         if (round != null) {
             if (round["completed"] as Boolean) {
-                GolfScorecard.completeRound(round);
+                NetScoreGolf.completeRound(round);
                 var summaryView = new SummaryView(round);
                 return [summaryView, new SummaryViewDelegate(summaryView)];
             }
@@ -380,10 +380,10 @@ class GolfScorecardApp extends Application.AppBase {
                 var activeView = new ActiveHoleView(round);
                 return [activeView, new ActiveHoleViewDelegate(activeView)];
             }
-            GolfScorecard.clearRound();
+            NetScoreGolf.clearRound();
         }
 
-        var configuration = GolfScorecard.loadConfiguredCourses();
+        var configuration = NetScoreGolf.loadConfiguredCourses();
         var courseView = new CourseSelectView(configuration);
         _courseSelectView = courseView;
         return [courseView, new CourseSelectViewDelegate(courseView)];

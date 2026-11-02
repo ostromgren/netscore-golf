@@ -65,7 +65,7 @@ supported device with the SDK's `monkeyc` compiler, using `monkey.jungle` as
 the project file. For example:
 
 ```sh
-monkeyc -d venu2 -f monkey.jungle -o bin/golfscorecard.prg -y /path/to/developer_key
+monkeyc -d venu2 -f monkey.jungle -o bin/netscoregolf.prg -y /path/to/developer_key
 ```
 
 Supported device targets are listed in [manifest.xml](manifest.xml). Build

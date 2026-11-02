@@ -117,7 +117,7 @@ class ActiveHoleView extends WatchUi.View {
         } else if (delta < 0 && gross > 1) {
             strokes[currentHole] = gross - 1;
         }
-        GolfScorecard.saveRound(_round);
+        NetScoreGolf.saveRound(_round);
         WatchUi.requestUpdate();
     }
 
@@ -125,14 +125,14 @@ class ActiveHoleView extends WatchUi.View {
         var currentHole = _round["currentHole"] as Number;
         var totalHoles = _round["totalHoles"] as Number;
         if (currentHole >= totalHoles - 1) {
-            GolfScorecard.completeRound(_round);
+            NetScoreGolf.completeRound(_round);
             var summaryView = new SummaryView(_round);
             WatchUi.switchToView(summaryView, new SummaryViewDelegate(summaryView), WatchUi.SLIDE_LEFT);
             return;
         }
 
         _round["currentHole"] = currentHole + 1;
-        GolfScorecard.saveRound(_round);
+        NetScoreGolf.saveRound(_round);
         WatchUi.requestUpdate();
     }
 
@@ -146,7 +146,7 @@ class ActiveHoleView extends WatchUi.View {
     }
 
     function completeRound() as Void {
-        GolfScorecard.completeRound(_round);
+        NetScoreGolf.completeRound(_round);
         var summaryView = new SummaryView(_round);
         WatchUi.switchToView(
             summaryView,
@@ -163,7 +163,7 @@ class ActiveHoleView extends WatchUi.View {
         var currentHole = _round["currentHole"] as Number;
         if (currentHole > 0) {
             _round["currentHole"] = currentHole - 1;
-            GolfScorecard.saveRound(_round);
+            NetScoreGolf.saveRound(_round);
             WatchUi.requestUpdate();
             return true;
         }

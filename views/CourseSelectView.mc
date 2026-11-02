@@ -159,7 +159,7 @@ class CourseSelectView extends WatchUi.View {
             selectedName = (_courses[_courseIndex] as Dictionary)["name"] as String;
         }
 
-        var configuration = GolfScorecard.loadConfiguredCourses();
+        var configuration = NetScoreGolf.loadConfiguredCourses();
         _courses = configuration["courses"] as Array;
         _errors = configuration["errors"] as Array;
         _courseIndex = 0;
@@ -353,7 +353,7 @@ class CourseSelectView extends WatchUi.View {
             loopB = loops[_loopB] as Dictionary;
         }
 
-        var round = GolfScorecard.createRound(course, loopA, loopB, _roundHoles, _handicap);
+        var round = NetScoreGolf.createRound(course, loopA, loopB, _roundHoles, _handicap);
         var activeView = new ActiveHoleView(round);
         WatchUi.switchToView(
             activeView,
