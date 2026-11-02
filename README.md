@@ -70,3 +70,18 @@ monkeyc -d venu2 -f monkey.jungle -o bin/netscoregolf.prg -y /path/to/developer_
 
 Supported device targets are listed in [manifest.xml](manifest.xml). Build
 outputs and local developer keys are not part of the source repository.
+
+## Connect IQ Store images
+
+Store-ready images are in [store-assets](store-assets/):
+
+- [Hero image](store-assets/hero-redesigned-banner.png) — 1440 × 720, dark teal
+  and mint palette.
+- [Cover image](store-assets/cover-image-500x500.png) — 500 × 500, using the
+  project launcher icon; under the 300 KB limit.
+- [64-color device icon](store-assets/device-icon-64-color-128x128.png) and
+  [24-bit device icon](store-assets/device-icon-24-bit-128x128.png) — both
+  128 × 128.
+
+The original launcher icon remains at
+[resources/drawables/icon.png](resources/drawables/icon.png).
