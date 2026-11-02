@@ -156,7 +156,7 @@ class ActiveHoleView extends WatchUi.View {
     }
 
     function scheduleRoundCompletion() as Void {
-        _endRoundTimer.start(method(:completeRound), 1, false);
+        _endRoundTimer.start(method(:completeRound), 100, false);
     }
 
     function previousHole() as Boolean {
@@ -172,7 +172,7 @@ class ActiveHoleView extends WatchUi.View {
 
     function handleTap(x as Number, y as Number) as Void {
         var relativeY = y * 100 / _screenHeight;
-        if (relativeY >= 72 && relativeY < 86) {
+        if (relativeY >= 60 && relativeY < 76) {
             if (x < _screenWidth * 45 / 100) {
                 adjustStrokes(-1);
             } else if (x > _screenWidth * 55 / 100) {
