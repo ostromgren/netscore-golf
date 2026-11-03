@@ -39,17 +39,8 @@ class NetScoreGolf {
             }
 
             if (!hasNewLoopSettings) {
-                var legacyValue = Properties.getValue("course" + slot.format("%d") + "Loops");
-                var legacyData = (legacyValue instanceof String) ? legacyValue as String : "";
-                if (name.equals("") && legacyData.equals("")) {
-                    continue;
-                }
-
-                var legacyCourse = parseCourse(name, legacyData);
-                if (legacyCourse != null) {
-                    courses.add(legacyCourse);
-                } else {
-                    errors.add("Course " + slot.format("%d") + ": invalid legacy loop data");
+                if (!name.equals("")) {
+                    errors.add("Course " + slot.format("%d") + ": no loops configured");
                 }
             } else if (name.equals("") || loops.size() == 0 || hasInvalidLoop) {
                 if (name.equals("")) {
@@ -83,10 +74,20 @@ class NetScoreGolf {
         return parts as Array<String>;
     }
 
+    public static function parseHandicapIndex(value as String) as Number {
+        for (var candidate = 1; candidate <= 18; candidate++) {
+            if (value.equals(candidate.format("%02d")) ||
+                value.equals(candidate.format("%d"))) {
+                return candidate;
+            }
+        }
+        return 0;
+    }
+
     public static function describeLoopSettingError(value as String) as String {
         var fields = splitString(value, "|");
         if (fields.size() != 2) {
-            return "use LoopName|par-index,...";
+            return "use LoopName|par-index,... or LoopName|par-UT-IN,...";
         }
         if (fields[0].equals("")) {
             return "loop name is blank";
@@ -101,14 +102,25 @@ class NetScoreGolf {
             return "enter exactly 9 or 18 holes";
         }
 
-        var usedIndices = [
+        var usedOutIndexes = [
             false, false, false, false, false, false, false, false, false,
             false, false, false, false, false, false, false, false, false, false
         ];
+        var usedInIndexes = [
+            false, false, false, false, false, false, false, false, false,
+            false, false, false, false, false, false, false, false, false, false
+        ];
+        var expectedParts = 2;
         for (var i = 0; i < totalHoles; i++) {
             var pair = splitString(holeEntries[i], "-");
-            if (pair.size() != 2) {
-                return "each hole must use par-index";
+            if (totalHoles == 9 && i == 0) {
+                if (pair.size() != 2 && pair.size() != 3) {
+                    return "9-hole entries use par-index or par-UT-IN-index";
+                }
+                expectedParts = pair.size();
+            }
+            if (pair.size() != expectedParts) {
+                return "all holes in a loop must use the same index format";
             }
 
             if (!pair[0].equals("3") && !pair[0].equals("4") &&
@@ -117,20 +129,20 @@ class NetScoreGolf {
                     pair[0] + "] invalid";
             }
 
-            var hcpIndex = 0;
-            for (var candidate = 1; candidate <= totalHoles; candidate++) {
-                if (pair[1].equals(candidate.format("%02d")) ||
-                    pair[1].equals(candidate.format("%d"))) {
-                    hcpIndex = candidate;
-                }
+            var outIndex = parseHandicapIndex(pair[1] as String);
+            var inIndex = (totalHoles == 9 && expectedParts == 3) ?
+                parseHandicapIndex(pair[2] as String) : outIndex;
+            if (outIndex == 0 || inIndex == 0) {
+                return "indexes must be from 1 to 18";
             }
-            if (hcpIndex == 0) {
-                return "index must be 1-" + totalHoles.format("%d");
+            if (usedOutIndexes[outIndex] ||
+                (totalHoles == 9 && expectedParts == 3 && usedInIndexes[inIndex])) {
+                return "indexes must be unique within each set";
             }
-            if (usedIndices[hcpIndex]) {
-                return "handicap indexes must be unique";
+            usedOutIndexes[outIndex] = true;
+            if (totalHoles == 9 && expectedParts == 3) {
+                usedInIndexes[inIndex] = true;
             }
-            usedIndices[hcpIndex] = true;
         }
 
         return "invalid loop data";
@@ -149,13 +161,25 @@ class NetScoreGolf {
         }
 
         var holes = [];
-        var usedIndices = [
+        var usedOutIndexes = [
             false, false, false, false, false, false, false, false, false,
             false, false, false, false, false, false, false, false, false, false
         ];
+        var usedInIndexes = [
+            false, false, false, false, false, false, false, false, false,
+            false, false, false, false, false, false, false, false, false, false
+        ];
+        var nineHoleHasInIndexes = false;
         for (var i = 0; i < totalHoles; i++) {
             var pair = splitString(holeEntries[i], "-");
-            if (pair.size() != 2) {
+            if (totalHoles == 9 && i == 0) {
+                if (pair.size() != 2 && pair.size() != 3) {
+                    return null;
+                }
+                nineHoleHasInIndexes = pair.size() == 3;
+            }
+            var expectedParts = (totalHoles == 18 || !nineHoleHasInIndexes) ? 2 : 3;
+            if (pair.size() != expectedParts) {
                 return null;
             }
 
@@ -168,106 +192,99 @@ class NetScoreGolf {
                 par = 5;
             }
 
-            var hcpIndex = 0;
-            for (var candidate = 1; candidate <= totalHoles; candidate++) {
-                if (pair[1].equals(candidate.format("%02d")) ||
-                    pair[1].equals(candidate.format("%d"))) {
-                    hcpIndex = candidate;
-                }
-            }
-            if (par == 0 || hcpIndex == 0 || usedIndices[hcpIndex]) {
+            var outIndex = parseHandicapIndex(pair[1] as String);
+            var inIndex = (totalHoles == 9 && nineHoleHasInIndexes) ?
+                parseHandicapIndex(pair[2] as String) : outIndex;
+            if (par == 0 || outIndex == 0 || inIndex == 0 ||
+                usedOutIndexes[outIndex] ||
+                (totalHoles == 9 && nineHoleHasInIndexes && usedInIndexes[inIndex])) {
                 return null;
             }
 
-            usedIndices[hcpIndex] = true;
-            holes.add({ "par" => par, "hcp" => hcpIndex });
+            usedOutIndexes[outIndex] = true;
+            if (totalHoles == 9 && nineHoleHasInIndexes) {
+                usedInIndexes[inIndex] = true;
+            }
+            if (totalHoles == 9) {
+                holes.add({
+                    "par" => par,
+                    "outIndex" => outIndex,
+                    "inIndex" => (nineHoleHasInIndexes ? inIndex : 0)
+                });
+            } else {
+                holes.add({ "par" => par, "hcp" => outIndex });
+            }
         }
 
         return {
             "name" => fields[0],
             "totalHoles" => totalHoles,
+            "hasInIndexes" => nineHoleHasInIndexes,
             "holes" => holes
         };
     }
 
-    public static function parseCourse(name as String, data as String) as Dictionary? {
-        if (name.equals("") || data.equals("")) {
-            return null;
+    public static function getNineHoleRank(loop as Dictionary, hcpIndex as Number) as Number {
+        var holes = loop["holes"] as Array;
+        var rank = 1;
+        for (var i = 0; i < holes.size(); i++) {
+            if (((holes[i] as Dictionary)["outIndex"] as Number) < hcpIndex) {
+                rank += 1;
+            }
+        }
+        return rank;
+    }
+
+    public static function hasValidCombinedIndexes(loopA as Dictionary, loopB as Dictionary) as Boolean {
+        if ((loopA["totalHoles"] as Number) != 9 ||
+            (loopB["totalHoles"] as Number) != 9) {
+            return false;
         }
 
-        var records = splitString(data, ";");
-        if (records.size() > 4) {
-            return null;
+        if (usesLocalNineHoleIndexes(loopA, loopB)) {
+            return true;
         }
 
-        var loops = [];
-        for (var i = 0; i < records.size(); i++) {
-            var fields = splitString(records[i], "~");
-            if (fields.size() != 3 || fields[0].equals("")) {
-                return null;
+        var usedIndexes = [
+            false, false, false, false, false, false, false, false, false,
+            false, false, false, false, false, false, false, false, false, false
+        ];
+        var holesA = loopA["holes"] as Array;
+        var holesB = loopB["holes"] as Array;
+        for (var i = 0; i < 9; i++) {
+            var outIndex = (holesA[i] as Dictionary)["outIndex"] as Number;
+            var inIndex = (holesB[i] as Dictionary)["inIndex"] as Number;
+            if (outIndex < 1 || outIndex > 18 || inIndex < 1 || inIndex > 18 ||
+                usedIndexes[outIndex] || usedIndexes[inIndex]) {
+                return false;
             }
-
-            var totalHoles = 0;
-            if (fields[1].equals("9")) {
-                totalHoles = 9;
-            } else if (fields[1].equals("18")) {
-                totalHoles = 18;
-            }
-            if (totalHoles == 0) {
-                return null;
-            }
-
-            var holeData = fields[2];
-            if (holeData.length() != totalHoles * 3) {
-                return null;
-            }
-
-            var holes = [];
-            var usedIndices = [
-                false, false, false, false, false, false, false, false, false,
-                false, false, false, false, false, false, false, false, false, false
-            ];
-            for (var holeIndex = 0; holeIndex < totalHoles; holeIndex++) {
-                var offset = holeIndex * 3;
-                var parTextValue = holeData.substring(offset, offset + 1);
-                var hcpTextValue = holeData.substring(offset + 1, offset + 3);
-                if (!(parTextValue instanceof String) ||
-                    !(hcpTextValue instanceof String)) {
-                    return null;
-                }
-                var parText = parTextValue as String;
-                var hcpText = hcpTextValue as String;
-                var par = 0;
-                if (parText.equals("3")) {
-                    par = 3;
-                } else if (parText.equals("4")) {
-                    par = 4;
-                } else if (parText.equals("5")) {
-                    par = 5;
-                }
-
-                var hcpIndex = 0;
-                for (var candidate = 1; candidate <= totalHoles; candidate++) {
-                    if (hcpText.equals(candidate.format("%02d"))) {
-                        hcpIndex = candidate;
-                    }
-                }
-                if (par == 0 || hcpIndex == 0 || usedIndices[hcpIndex]) {
-                    return null;
-                }
-
-                usedIndices[hcpIndex] = true;
-                holes.add({ "par" => par, "hcp" => hcpIndex });
-            }
-
-            loops.add({
-                "name" => fields[0],
-                "totalHoles" => totalHoles,
-                "holes" => holes
-            });
+            usedIndexes[outIndex] = true;
+            usedIndexes[inIndex] = true;
         }
 
-        return { "name" => name, "loops" => loops };
+        for (var index = 1; index <= 18; index++) {
+            if (!usedIndexes[index]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static function usesLocalNineHoleIndexes(loopA as Dictionary, loopB as Dictionary) as Boolean {
+        var holesA = loopA["holes"] as Array;
+        var holesB = loopB["holes"] as Array;
+        if (holesA.size() != 9 || holesB.size() != 9) {
+            return false;
+        }
+
+        for (var i = 0; i < 9; i++) {
+            var outIndex = (holesA[i] as Dictionary)["outIndex"] as Number;
+            var inIndex = (holesB[i] as Dictionary)["inIndex"] as Number;
+            if (outIndex < 1 || outIndex > 9 || inIndex < 1 || inIndex > 9) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static function createRound(course as Dictionary, loopA as Dictionary, loopB as Dictionary?, totalHoles as Number, handicap as Number) as Dictionary {
@@ -279,9 +296,20 @@ class NetScoreGolf {
                     (loopB == null || (loopB["totalHoles"] as Number) != 9)))) {
             throw new Lang.InvalidValueException("Invalid round setup");
         }
+        if (totalHoles == 18 && (loopA["totalHoles"] as Number) == 9 &&
+            !hasValidCombinedIndexes(loopA, loopB as Dictionary)) {
+            throw new Lang.InvalidValueException("Combined loop indexes must cover 1 to 18");
+        }
+        var localNineHoleIndexes = totalHoles == 18 &&
+            (loopA["totalHoles"] as Number) == 9 &&
+            usesLocalNineHoleIndexes(loopA, loopB as Dictionary);
 
         var holes = [];
         var strokes = [];
+        var usedStrokeRanks = [
+            false, false, false, false, false, false, false, false, false,
+            false, false, false, false, false, false, false, false, false, false
+        ];
         for (var i = 0; i < totalHoles; i++) {
             var selectedLoop = loopA;
             if (totalHoles == 18 && (loopA["totalHoles"] as Number) == 9 && i >= 9) {
@@ -292,14 +320,32 @@ class NetScoreGolf {
             var sourceHole = sourceHoles[
                 (selectedLoop["totalHoles"] as Number) == 9 ? i % 9 : i
             ] as Dictionary;
-            var hcpIndex = sourceHole["hcp"] as Number;
-            if (totalHoles == 18 &&
-                (loopA["totalHoles"] as Number) == 9 && i >= 9) {
-                hcpIndex += 9;
+            var hcpIndex = 0;
+            var strokeRank = 0;
+            if (totalHoles == 9) {
+                hcpIndex = sourceHole["outIndex"] as Number;
+                strokeRank = getNineHoleRank(selectedLoop, hcpIndex);
+            } else if ((loopA["totalHoles"] as Number) == 9) {
+                hcpIndex = (i < 9) ?
+                    sourceHole["outIndex"] as Number :
+                    sourceHole["inIndex"] as Number;
+                if (i >= 9 && localNineHoleIndexes) {
+                    hcpIndex += 9;
+                }
+                strokeRank = hcpIndex;
+            } else {
+                hcpIndex = sourceHole["hcp"] as Number;
+                strokeRank = hcpIndex;
             }
+            if (hcpIndex < 1 || hcpIndex > 18 || strokeRank < 1 ||
+                strokeRank > totalHoles || usedStrokeRanks[strokeRank]) {
+                throw new Lang.InvalidValueException("Round handicap indexes must be unique and in range");
+            }
+            usedStrokeRanks[strokeRank] = true;
             holes.add({
                 "par" => sourceHole["par"] as Number,
-                "hcp" => hcpIndex
+                "hcp" => hcpIndex,
+                "strokeRank" => strokeRank
             });
             strokes.add(sourceHole["par"] as Number);
         }

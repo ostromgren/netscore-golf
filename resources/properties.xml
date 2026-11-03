@@ -1,60 +1,50 @@
 <properties>
     <property id="course1Name" type="string"></property>
-    <property id="course1Loops" type="string"></property>
     <property id="course1LoopA" type="string"></property>
     <property id="course1LoopB" type="string"></property>
     <property id="course1LoopC" type="string"></property>
     <property id="course1LoopD" type="string"></property>
     <property id="course2Name" type="string"></property>
-    <property id="course2Loops" type="string"></property>
     <property id="course2LoopA" type="string"></property>
     <property id="course2LoopB" type="string"></property>
     <property id="course2LoopC" type="string"></property>
     <property id="course2LoopD" type="string"></property>
     <property id="course3Name" type="string"></property>
-    <property id="course3Loops" type="string"></property>
     <property id="course3LoopA" type="string"></property>
     <property id="course3LoopB" type="string"></property>
     <property id="course3LoopC" type="string"></property>
     <property id="course3LoopD" type="string"></property>
     <property id="course4Name" type="string"></property>
-    <property id="course4Loops" type="string"></property>
     <property id="course4LoopA" type="string"></property>
     <property id="course4LoopB" type="string"></property>
     <property id="course4LoopC" type="string"></property>
     <property id="course4LoopD" type="string"></property>
     <property id="course5Name" type="string"></property>
-    <property id="course5Loops" type="string"></property>
     <property id="course5LoopA" type="string"></property>
     <property id="course5LoopB" type="string"></property>
     <property id="course5LoopC" type="string"></property>
     <property id="course5LoopD" type="string"></property>
     <property id="course6Name" type="string"></property>
-    <property id="course6Loops" type="string"></property>
     <property id="course6LoopA" type="string"></property>
     <property id="course6LoopB" type="string"></property>
     <property id="course6LoopC" type="string"></property>
     <property id="course6LoopD" type="string"></property>
     <property id="course7Name" type="string"></property>
-    <property id="course7Loops" type="string"></property>
     <property id="course7LoopA" type="string"></property>
     <property id="course7LoopB" type="string"></property>
     <property id="course7LoopC" type="string"></property>
     <property id="course7LoopD" type="string"></property>
     <property id="course8Name" type="string"></property>
-    <property id="course8Loops" type="string"></property>
     <property id="course8LoopA" type="string"></property>
     <property id="course8LoopB" type="string"></property>
     <property id="course8LoopC" type="string"></property>
     <property id="course8LoopD" type="string"></property>
     <property id="course9Name" type="string"></property>
-    <property id="course9Loops" type="string"></property>
     <property id="course9LoopA" type="string"></property>
     <property id="course9LoopB" type="string"></property>
     <property id="course9LoopC" type="string"></property>
     <property id="course9LoopD" type="string"></property>
     <property id="course10Name" type="string"></property>
-    <property id="course10Loops" type="string"></property>
     <property id="course10LoopA" type="string"></property>
     <property id="course10LoopB" type="string"></property>
     <property id="course10LoopC" type="string"></property>

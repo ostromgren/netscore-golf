@@ -351,6 +351,11 @@ class CourseSelectView extends WatchUi.View {
                 return;
             }
             loopB = loops[_loopB] as Dictionary;
+            if (!NetScoreGolf.hasValidCombinedIndexes(loopA, loopB as Dictionary)) {
+                _message = "Combined indexes must cover 1-18";
+                WatchUi.requestUpdate();
+                return;
+            }
         }
 
         var round = NetScoreGolf.createRound(course, loopA, loopB, _roundHoles, _handicap);

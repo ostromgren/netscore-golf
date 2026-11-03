@@ -36,9 +36,11 @@ class ScoreCalculator {
         for (var i = 0; i < totalHoles; i++) {
             var hole = holesData[i] as Dictionary;
             var par = hole["par"] as Number;
-            var hcpIndex = hole["hcp"] as Number;
+            var strokeRankValue = hole["strokeRank"];
+            var strokeRank = (strokeRankValue instanceof Number) ?
+                strokeRankValue as Number : hole["hcp"] as Number;
             var gross = strokesArray[i] as Number;
-            var received = getStrokesOnHole(playingHandicap, hcpIndex, totalHoles);
+            var received = getStrokesOnHole(playingHandicap, strokeRank, totalHoles);
             totalGrossStrokes += gross;
             totalNetStrokes += gross - received;
             totalPoints += calculateStablefordPoints(par, gross, received);
