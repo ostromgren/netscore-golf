@@ -22,6 +22,7 @@ class CourseSelectView extends WatchUi.View {
 
     function initialize(configuration as Dictionary) {
         View.initialize();
+        _handicap = NetScoreGolf.getLastHandicap();
         _marqueeTimer = new Timer.Timer();
         _courses = configuration["courses"] as Array;
         _errors = configuration["errors"] as Array;
@@ -129,10 +130,12 @@ class CourseSelectView extends WatchUi.View {
     }
 
     function drawHandicapControls(dc as Dc, centerX as Number, y as Number) as Void {
+        var handicapText = (_handicap < 0) ?
+            "+" + (-_handicap).format("%d") : _handicap.format("%d");
         dc.drawText(_screenWidth * 25 / 100, y, Graphics.FONT_MEDIUM, "-",
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.drawText(centerX, y, Graphics.FONT_XTINY,
-            "PHCP " + _handicap.format("%d"),
+            "PHCP " + handicapText,
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         dc.drawText(_screenWidth * 75 / 100, y, Graphics.FONT_MEDIUM, "+",
             Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
@@ -288,11 +291,12 @@ class CourseSelectView extends WatchUi.View {
                 _loopB = findSecondLoop(start);
             } else if (field == 4) {
                 _handicap += delta;
-                if (_handicap < 0) {
-                    _handicap = 0;
+                if (_handicap < -54) {
+                    _handicap = -54;
                 } else if (_handicap > 54) {
                     _handicap = 54;
                 }
+                NetScoreGolf.saveLastHandicap(_handicap);
             }
         }
 

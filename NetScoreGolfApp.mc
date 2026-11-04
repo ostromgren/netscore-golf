@@ -288,7 +288,7 @@ class NetScoreGolf {
     }
 
     public static function createRound(course as Dictionary, loopA as Dictionary, loopB as Dictionary?, totalHoles as Number, handicap as Number) as Dictionary {
-        if ((totalHoles != 9 && totalHoles != 18) || handicap < 0 ||
+        if ((totalHoles != 9 && totalHoles != 18) || handicap < -54 || handicap > 54 ||
             (totalHoles == 9 && (loopA["totalHoles"] as Number) != 9) ||
             (totalHoles == 18 &&
                 ((loopA["totalHoles"] as Number) == 18 && loopB != null ||
@@ -324,7 +324,7 @@ class NetScoreGolf {
             var strokeRank = 0;
             if (totalHoles == 9) {
                 hcpIndex = sourceHole["outIndex"] as Number;
-                strokeRank = getNineHoleRank(selectedLoop, hcpIndex);
+                strokeRank = hcpIndex;
             } else if ((loopA["totalHoles"] as Number) == 9) {
                 hcpIndex = (i < 9) ?
                     sourceHole["outIndex"] as Number :
@@ -338,7 +338,7 @@ class NetScoreGolf {
                 strokeRank = hcpIndex;
             }
             if (hcpIndex < 1 || hcpIndex > 18 || strokeRank < 1 ||
-                strokeRank > totalHoles || usedStrokeRanks[strokeRank]) {
+                strokeRank > 18 || usedStrokeRanks[strokeRank]) {
                 throw new Lang.InvalidValueException("Round handicap indexes must be unique and in range");
             }
             usedStrokeRanks[strokeRank] = true;
@@ -372,6 +372,23 @@ class NetScoreGolf {
     public static function getActiveRound() as Dictionary? {
         var round = Storage.getValue("activeRound");
         return (round instanceof Dictionary) ? round as Dictionary : null;
+    }
+
+    public static function getLastHandicap() as Number {
+        var storedValue = Storage.getValue("lastHandicap");
+        if (storedValue instanceof Number) {
+            var handicap = storedValue as Number;
+            if (handicap >= -54 && handicap <= 54) {
+                return handicap;
+            }
+        }
+        return 18;
+    }
+
+    public static function saveLastHandicap(handicap as Number) as Void {
+        if (handicap >= -54 && handicap <= 54) {
+            Storage.setValue("lastHandicap", handicap as Application.Storage.ValueType);
+        }
     }
 
     public static function saveRound(round as Dictionary) as Void {

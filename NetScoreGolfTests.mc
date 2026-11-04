@@ -45,6 +45,73 @@ function testKarlstadSimulatorProperties(logger as Test.Logger) as Boolean {
 }
 
 (:test)
+function testNineHoleRoundUsesPublishedOutIndexes(logger as Test.Logger) as Boolean {
+    var yellow = NetScoreGolf.parseLoopSetting(
+        "Yellow|4-1-2,5-7-8,3-11-12,4-3-4,4-15-16,3-9-10,4-13-14,4-5-6,5-17-18"
+    );
+    Test.assert(yellow != null);
+
+    var round = NetScoreGolf.createRound(
+        { "name" => "Karlstad GK" },
+        yellow as Dictionary,
+        null as Dictionary?,
+        9,
+        19
+    );
+    var scores = [5, 6, 5, 6, 4, 4, 5, 5, 6];
+    round["strokes"] = scores;
+    NetScoreGolf.completeRound(round);
+
+    var holes = round["holes"] as Array;
+    var expectedOutIndexes = [1, 7, 11, 3, 15, 9, 13, 5, 17];
+    for (var holeNumber = 0; holeNumber < expectedOutIndexes.size(); holeNumber++) {
+        Test.assertEqual(
+            (holes[holeNumber] as Dictionary)["strokeRank"],
+            expectedOutIndexes[holeNumber]
+        );
+    }
+    Test.assertEqual(round["totalGrossStrokes"], 46);
+    Test.assertEqual(round["totalNetStrokes"], 36);
+    Test.assertEqual(round["totalPoints"], 18);
+
+    var totalsAtHandicap18 = ScoreCalculator.calculateRoundTotals(holes, scores, 18);
+    Test.assertEqual(totalsAtHandicap18["net"], 37);
+    Test.assertEqual(totalsAtHandicap18["points"], 17);
+    return true;
+}
+
+(:test)
+function testLastHandicapPersists(logger as Test.Logger) as Boolean {
+    NetScoreGolf.saveLastHandicap(19);
+    Test.assertEqual(NetScoreGolf.getLastHandicap(), 19);
+    NetScoreGolf.saveLastHandicap(-1);
+    Test.assertEqual(NetScoreGolf.getLastHandicap(), -1);
+    NetScoreGolf.saveLastHandicap(18);
+    Test.assertEqual(NetScoreGolf.getLastHandicap(), 18);
+    return true;
+}
+
+(:test)
+function testPlusHandicapUsesHighestIndexes(logger as Test.Logger) as Boolean {
+    Test.assertEqual(ScoreCalculator.getStrokesOnHole(-1, 18, 18), -1);
+    Test.assertEqual(ScoreCalculator.getStrokesOnHole(-1, 17, 18), 0);
+    Test.assertEqual(ScoreCalculator.getStrokesOnHole(-2, 17, 18), -1);
+    Test.assertEqual(ScoreCalculator.getStrokesOnHole(-2, 16, 18), 0);
+    Test.assertEqual(ScoreCalculator.calculateStablefordPoints(4, 3, -1), 2);
+
+    var holes = [];
+    var scores = [];
+    for (var index = 1; index <= 18; index++) {
+        holes.add({ "par" => 4, "strokeRank" => index });
+        scores.add(4);
+    }
+    var totals = ScoreCalculator.calculateRoundTotals(holes, scores, -1);
+    Test.assertEqual(totals["net"], 73);
+    Test.assertEqual(totals["points"], 35);
+    return true;
+}
+
+(:test)
 function testBrynganSimulatorProperties(logger as Test.Logger) as Boolean {
     var bryngan = NetScoreGolf.parseLoopSetting(
         "18|3-07,4-05,4-11,4-03,5-15,3-13,4-01,4-09,5-17,3-14,5-4,4-12,4-2,4-10,3-18,5-6,4-16,4-8"

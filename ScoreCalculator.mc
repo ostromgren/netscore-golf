@@ -3,13 +3,17 @@ import Toybox.Lang;
 class ScoreCalculator {
 
     public static function getStrokesOnHole(handicap as Number, hcpIndex as Number, totalHoles as Number) as Number {
-        if ((totalHoles != 9 && totalHoles != 18) || handicap < 0 ||
+        if ((totalHoles != 9 && totalHoles != 18) || handicap < -54 || handicap > 54 ||
             hcpIndex < 1 || hcpIndex > totalHoles) {
             throw new Lang.InvalidValueException("Invalid handicap, hole index, or hole count");
         }
 
-        var baseStrokes = handicap / totalHoles;
-        var remainder = handicap % totalHoles;
+        var absoluteHandicap = (handicap < 0) ? -handicap : handicap;
+        var baseStrokes = absoluteHandicap / totalHoles;
+        var remainder = absoluteHandicap % totalHoles;
+        if (handicap < 0) {
+            return 0 - baseStrokes - ((hcpIndex > totalHoles - remainder) ? 1 : 0);
+        }
         return baseStrokes + ((hcpIndex <= remainder) ? 1 : 0);
     }
 
@@ -26,10 +30,12 @@ class ScoreCalculator {
     public static function calculateRoundTotals(holesData as Array, strokesArray as Array, playingHandicap as Number) as Dictionary {
         var totalHoles = holesData.size();
         if ((totalHoles != 9 && totalHoles != 18) ||
-            strokesArray.size() != totalHoles || playingHandicap < 0) {
+            strokesArray.size() != totalHoles || playingHandicap < -54 ||
+            playingHandicap > 54) {
             throw new Lang.InvalidValueException("Round data must contain 9 or 18 holes and matching scores");
         }
 
+        var handicapHoles = (totalHoles == 9) ? 18 : totalHoles;
         var totalPoints = 0;
         var totalGrossStrokes = 0;
         var totalNetStrokes = 0;
@@ -40,7 +46,7 @@ class ScoreCalculator {
             var strokeRank = (strokeRankValue instanceof Number) ?
                 strokeRankValue as Number : hole["hcp"] as Number;
             var gross = strokesArray[i] as Number;
-            var received = getStrokesOnHole(playingHandicap, strokeRank, totalHoles);
+            var received = getStrokesOnHole(playingHandicap, strokeRank, handicapHoles);
             totalGrossStrokes += gross;
             totalNetStrokes += gross - received;
             totalPoints += calculateStablefordPoints(par, gross, received);

@@ -8,7 +8,8 @@ Stableford points on your watch. It does not use GPS or location services.
 - Play 9-hole or 18-hole rounds.
 - Configure up to 10 courses, with up to 4 loops per course.
 - Combine two 9-hole loops into an 18-hole round, or use a single 18-hole loop.
-- Set the playing handicap for each round.
+- Set the playing handicap for each round; the last value is remembered.
+- Plus handicaps are supported and apply deductions on the highest-index holes.
 - Adjust strokes with the touchscreen or watch buttons; swipe or tap to change
   holes.
 - Resume an in-progress round after leaving the app.
@@ -70,9 +71,9 @@ changing their scorecard entries.
 Each loop must contain exactly 9 or 18 holes. Par must be 3, 4, or 5, and
 indexes in each set must be unique. An 18-hole loop must use every index from
 1 to 18. A standalone 9-hole loop may use its published 1–18 course indexes;
-the watch displays that index and allocates nine-hole strokes by the relative
-rank among the nine holes. A single-index 9-hole setting remains valid for
-standalone play. Loop names cannot contain `|`.
+the watch displays and uses those indexes directly when calculating strokes
+received from the playing handicap. A single-index 9-hole setting remains
+valid for standalone play. Loop names cannot contain `|`.
 
 On the watch, choose the course and round length, then select the loop or
 loops. For an 18-hole round made from two 9-hole loops, the first selected
